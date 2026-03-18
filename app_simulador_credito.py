@@ -4,7 +4,7 @@ from datetime import datetime, date
 from io import BytesIO
 from openpyxl.styles import Font, PatternFill, Border, Side, Alignment
 
-VERSION = "v3.9 DATE PICKER RMARQ"
+VERSION = "v4.3 BLANK OUTSIDE DAYS RMARQ"
 
 st.set_page_config(
     page_title="Simulador de Crédito",
@@ -254,6 +254,117 @@ st.markdown("""
             font-size: 1.35rem !important;
         }
     }
+
+    /* FIX DATE INPUT STYLE */
+    div[data-testid="stDateInput"] input {
+        background: #ffffff !important;
+        color: #111827 !important;
+        -webkit-text-fill-color: #111827 !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 10px !important;
+        height: 38px !important;
+        box-shadow: none !important;
+    }
+
+    div[data-testid="stDateInput"] > div,
+    div[data-testid="stDateInput"] div[data-baseweb="input"],
+    div[data-testid="stDateInput"] div[data-baseweb="base-input"] {
+        background: transparent !important;
+        box-shadow: none !important;
+        border: none !important;
+    }
+
+
+    /* Calendario flotante claro */
+    [data-baseweb="popover"] {
+        background: transparent !important;
+    }
+
+    [data-baseweb="popover"] > div {
+        background: #ffffff !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 14px !important;
+        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12) !important;
+    }
+
+    [data-baseweb="calendar"] {
+        background: #ffffff !important;
+        color: #111827 !important;
+    }
+
+    [data-baseweb="calendar"] * {
+        color: #111827 !important;
+    }
+
+    [data-baseweb="calendar"] button {
+        background: transparent !important;
+        color: #111827 !important;
+    }
+
+    [data-baseweb="calendar"] button:hover {
+        background: #eef4ff !important;
+    }
+
+    [data-baseweb="calendar"] [aria-selected="true"],
+    [data-baseweb="calendar"] [aria-selected="true"] * {
+        background: #dbeafe !important;
+        color: #1e3a8a !important;
+        border-radius: 999px !important;
+    }
+
+    [data-baseweb="calendar"] [data-outside-month="true"] {
+        color: #9ca3af !important;
+    }
+
+    [data-baseweb="calendar"] svg {
+        fill: #111827 !important;
+    }
+
+
+/* FIX TOTAL CALENDARIO SIN NEGRO */
+[data-baseweb="popover"],
+[data-baseweb="popover"] * {
+    background: #ffffff !important;
+    color: #111827 !important;
+}
+
+[data-baseweb="calendar"],
+[data-baseweb="calendar"] * {
+    background: #ffffff !important;
+    color: #111827 !important;
+}
+
+[data-baseweb="calendar"] [aria-selected="true"],
+[data-baseweb="calendar"] [aria-selected="true"] * {
+    background: #e0f2fe !important;
+    color: #0369a1 !important;
+    border-radius: 999px !important;
+}
+
+[data-baseweb="calendar"] button:hover {
+    background: #f1f5f9 !important;
+}
+
+[data-baseweb="calendar"] svg {
+    fill: #111827 !important;
+}
+
+
+/* Días fuera del mes sin caja negra, quedan blancos */
+[data-baseweb="calendar"] [data-outside-month="true"],
+[data-baseweb="calendar"] [data-outside-month="true"] * {
+    background: #ffffff !important;
+    color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+[data-baseweb="calendar"] [data-outside-month="true"]:hover,
+[data-baseweb="calendar"] [data-outside-month="true"]:hover * {
+    background: #ffffff !important;
+    color: transparent !important;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
