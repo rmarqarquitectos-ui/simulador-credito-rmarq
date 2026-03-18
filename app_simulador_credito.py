@@ -4,7 +4,7 @@ from datetime import datetime, date
 from io import BytesIO
 from openpyxl.styles import Font, PatternFill, Border, Side, Alignment
 
-VERSION = "v3.8 OPEN AMORTIZATION QUOTA RMARQ"
+VERSION = "v3.9 DATE PICKER RMARQ"
 
 st.set_page_config(
     page_title="Simulador de Crédito",
@@ -519,15 +519,14 @@ if tasa_anual_pct == "ERROR":
     st.error("Tasa inválida.")
     tasa_anual_pct = 0.0
 
-fecha_texto = st.text_input(
+fecha_primera_cuota = st.date_input(
     "Fecha 1ª cuota",
-    value="",
-    placeholder="Día/Mes/Año"
+    value=None,
+    format="DD/MM/YYYY"
 )
-fecha_primera_cuota = parsear_fecha_texto(fecha_texto)
-if fecha_primera_cuota == "ERROR":
-    st.error("La fecha debe escribirse como Día/Mes/Año, por ejemplo 30/08/2027.")
-    fecha_primera_cuota = None
+
+fecha_texto = fecha_primera_cuota.strftime("%d/%m/%Y") if fecha_primera_cuota else ""
+
 
 st.subheader("Gastos")
 
