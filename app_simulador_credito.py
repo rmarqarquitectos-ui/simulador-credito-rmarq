@@ -4,7 +4,67 @@ from datetime import datetime, date
 from io import BytesIO
 from openpyxl.styles import Font, PatternFill, Border, Side, Alignment
 
-VERSION = "v4.3 BLANK OUTSIDE DAYS RMARQ"
+VERSION = "v4.4 LOGIN ACCESS RMARQ"
+
+APP_USERNAME = "rmarq"
+APP_PASSWORD = "rmarq1103"
+
+def mostrar_login():
+    st.markdown("""
+    <style>
+        .login-wrap {
+            max-width: 420px;
+            margin: 4rem auto 0 auto;
+            background: #ffffff;
+            border: 1px solid #d9e2ec;
+            border-radius: 18px;
+            padding: 1.4rem 1.4rem 1.2rem 1.4rem;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+        }
+        .login-title {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #1f2937;
+            margin-bottom: 0.2rem;
+        }
+        .login-subtitle {
+            color: #6b7280;
+            font-size: 0.88rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
+    st.markdown('<div class="login-wrap">', unsafe_allow_html=True)
+    st.markdown('<div class="login-title">Acceso privado</div>', unsafe_allow_html=True)
+    st.markdown('<div class="login-subtitle">Ingrese usuario y contraseña para continuar.</div>', unsafe_allow_html=True)
+
+    usuario = st.text_input("Usuario", key="login_usuario")
+    clave = st.text_input("Contraseña", type="password", key="login_clave")
+
+    col_a, col_b = st.columns([1, 1])
+    with col_a:
+        entrar = st.button("Ingresar", use_container_width=True)
+    with col_b:
+        st.empty()
+
+    if entrar:
+        if usuario == APP_USERNAME and clave == APP_PASSWORD:
+            st.session_state["authenticated"] = True
+            st.rerun()
+        else:
+            st.error("Credenciales incorrectas.")
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+def controlar_acceso():
+    if "authenticated" not in st.session_state:
+        st.session_state["authenticated"] = False
+
+    if not st.session_state["authenticated"]:
+        mostrar_login()
+        st.stop()
+
 
 st.set_page_config(
     page_title="Simulador de Crédito",
@@ -587,6 +647,14 @@ def generar_excel(parametros, resumen, df):
 # --------------------------------------------------
 # INTERFAZ
 # --------------------------------------------------
+controlar_acceso()
+
+col_logout_a, col_logout_b = st.columns([0.82, 0.18])
+with col_logout_b:
+    if st.button("Salir", use_container_width=True):
+        st.session_state["authenticated"] = False
+        st.rerun()
+
 st.title("Simulador de Crédito")
 st.markdown(f'<div class="version-label">{VERSION}</div>', unsafe_allow_html=True)
 st.write("Versión optimizada para visualización móvil y escritorio.")
