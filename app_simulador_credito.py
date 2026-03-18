@@ -4,7 +4,7 @@ from datetime import datetime, date
 from io import BytesIO
 from openpyxl.styles import Font, PatternFill, Border, Side, Alignment
 
-VERSION = "v3.5 RESPONSIVE FIX RMARQ"
+VERSION = "v3.8 OPEN AMORTIZATION QUOTA RMARQ"
 
 st.set_page_config(
     page_title="Simulador de Crédito",
@@ -325,16 +325,21 @@ def construir_simulacion(
     filas = []
 
     cuota_amortizacion_parcial = int(cuota_amortizacion_parcial) if cuota_amortizacion_parcial else 0
+    total_cuotas = max(
+        1,
+        int(cuotas_solo_interes) + 1,
+        (cuota_amortizacion_parcial + 1) if cuota_amortizacion_parcial > 0 else 1
+    )
 
-    for cuota_num in range(1, 6):
+    for cuota_num in range(1, total_cuotas + 1):
         saldo_inicial = float(saldo)
         interes = saldo_inicial * tasa
 
         if cuota_num <= int(cuotas_solo_interes):
             amortizacion = 0.0
-        elif cuota_num == cuota_amortizacion_parcial:
+        elif cuota_amortizacion_parcial > 0 and cuota_num == cuota_amortizacion_parcial:
             amortizacion = min(float(amortizacion_parcial), saldo_inicial)
-        elif cuota_num == 5:
+        elif cuota_num == total_cuotas:
             amortizacion = saldo_inicial
         else:
             amortizacion = 0.0
@@ -559,9 +564,6 @@ cuotas_solo_interes = parsear_entero(cuotas_solo_interes_txt)
 if cuotas_solo_interes == "ERROR":
     st.error("Cuotas solo interés inválidas.")
     cuotas_solo_interes = 0
-if cuotas_solo_interes > 4:
-    st.error("El máximo permitido es 4.")
-    cuotas_solo_interes = 4
 
 cuota_amortizacion_parcial_txt = st.text_input(
     "Cuota de amortización parcial",
@@ -572,9 +574,6 @@ cuota_amortizacion_parcial = parsear_entero(cuota_amortizacion_parcial_txt)
 if cuota_amortizacion_parcial == "ERROR":
     st.error("La cuota de amortización parcial es inválida.")
     cuota_amortizacion_parcial = 0
-if cuota_amortizacion_parcial > 5:
-    st.error("La cuota de amortización parcial no puede ser mayor a 5.")
-    cuota_amortizacion_parcial = 5
 
 amortizacion_parcial_txt = st.text_input(
     f"Monto amortización parcial ({'UF' if tipo_credito == 'UF' else '$'})",
