@@ -4,30 +4,26 @@ from datetime import datetime, date
 from io import BytesIO
 from openpyxl.styles import Font, PatternFill, Border, Side, Alignment
 
-VERSION = "v3.2 UI FIX FINAL RMARQ"
+VERSION = "v3.5 RESPONSIVE FIX RMARQ"
 
 st.set_page_config(
     page_title="Simulador de Crédito",
-    layout="wide",
-    initial_sidebar_state="expanded"
+    layout="centered",
+    initial_sidebar_state="collapsed"
 )
 
-# --------------------------------------------------
-# ESTILOS VISUALES FINALES
-# --------------------------------------------------
 st.markdown("""
 <style>
     :root {
         --bg: #f7f9fc;
-        --sidebar-bg: #eef3f8;
         --card-bg: #ffffff;
         --text: #1f2937;
         --muted: #6b7280;
         --border: #d9e2ec;
-        --primary-soft: #8da2b8;
-        --primary-soft-hover: #7f95ac;
         --soft-blue: #eaf3ff;
         --soft-yellow: #fff8db;
+        --button: #8da2b8;
+        --button-hover: #7f95ac;
         --table-head: #edf3f8;
         --table-row: #ffffff;
     }
@@ -47,84 +43,48 @@ st.markdown("""
         display: none !important;
     }
 
-    section[data-testid="stSidebar"] {
-        width: 355px !important;
-        min-width: 355px !important;
-        background: var(--sidebar-bg) !important;
-        border-right: 1px solid var(--border);
-    }
-
-    section[data-testid="stSidebar"] > div {
-        padding-top: 0.4rem !important;
-        padding-left: 0.85rem !important;
-        padding-right: 0.85rem !important;
-        padding-bottom: 0.45rem !important;
-    }
-
     .block-container {
-        max-width: 1320px;
-        padding-top: 0.65rem !important;
-        padding-bottom: 1rem !important;
+        max-width: 920px !important;
+        padding-top: 0.8rem !important;
+        padding-bottom: 1.2rem !important;
     }
 
     h1 {
         color: var(--text) !important;
-        font-size: 1.95rem !important;
+        font-size: 2rem !important;
         font-weight: 800 !important;
-        margin-bottom: 0.8rem !important;
-        line-height: 1.1 !important;
+        margin-bottom: 0.3rem !important;
     }
 
     h2, h3 {
         color: var(--text) !important;
         font-weight: 780 !important;
-        margin-top: 0.55rem !important;
+        margin-top: 0.8rem !important;
         margin-bottom: 0.45rem !important;
-        line-height: 1.1 !important;
     }
 
     p, label, span, div, li {
         color: var(--text);
     }
 
-    .sidebar-title {
-        font-size: 1.25rem;
-        font-weight: 800;
-        color: var(--text);
-        margin-bottom: 0.32rem;
-        line-height: 1.05;
-    }
-
-    .sidebar-section {
-        font-size: 0.94rem;
-        font-weight: 760;
-        color: var(--text);
-        margin-top: 0.32rem;
-        margin-bottom: 0.08rem;
-        line-height: 1.05;
-    }
-
-    .sidebar-note {
-        font-size: 0.73rem;
+    .version-label {
         color: var(--muted);
-        margin-top: 0rem;
-        margin-bottom: 0.12rem;
-        line-height: 1.15;
+        font-size: 0.88rem;
+        margin-bottom: 0.5rem;
     }
 
-    .stSidebar label {
-        font-size: 0.80rem !important;
-        margin-bottom: 0.04rem !important;
+    .section-title {
+        font-size: 0.98rem;
+        font-weight: 760;
+        margin-top: 0.8rem;
+        margin-bottom: 0.15rem;
+        color: var(--text);
     }
 
-    .stSidebar [data-testid="stVerticalBlock"] > div {
-        margin-bottom: 0.02rem !important;
-    }
-
-    .stSidebar .stTextInput,
-    .stSidebar .stCheckbox,
-    .stSidebar .stRadio {
-        margin-bottom: 0.08rem !important;
+    .section-note {
+        font-size: 0.80rem;
+        color: var(--muted);
+        margin-bottom: 0.25rem;
     }
 
     .stTextInput input {
@@ -133,18 +93,21 @@ st.markdown("""
         -webkit-text-fill-color: #111827 !important;
         border: 1px solid var(--border) !important;
         border-radius: 10px !important;
-        font-size: 0.84rem !important;
-        min-height: 30px !important;
-        height: 30px !important;
-        padding-top: 0.08rem !important;
-        padding-bottom: 0.08rem !important;
+        font-size: 0.92rem !important;
+        min-height: 38px !important;
+        height: 38px !important;
+        padding-top: 0.1rem !important;
+        padding-bottom: 0.1rem !important;
         box-shadow: none !important;
     }
 
     .stTextInput > div,
-    .stTextInput > div > div {
+    .stTextInput > div > div,
+    .stTextInput div[data-baseweb="input"],
+    .stTextInput div[data-baseweb="base-input"] {
         background: transparent !important;
         box-shadow: none !important;
+        border: none !important;
     }
 
     .stTextInput input:focus {
@@ -160,17 +123,18 @@ st.markdown("""
 
     .stRadio [role="radiogroup"] {
         display: flex !important;
-        gap: 0.45rem !important;
-        margin-top: 0.05rem !important;
-        margin-bottom: 0.05rem !important;
+        gap: 0.5rem !important;
+        margin-top: 0.1rem !important;
+        margin-bottom: 0.2rem !important;
+        flex-wrap: wrap !important;
     }
 
     .stRadio label {
         background: #ffffff !important;
         border: 1px solid var(--border) !important;
         border-radius: 10px !important;
-        padding: 0.28rem 0.72rem !important;
-        min-height: 30px !important;
+        padding: 0.35rem 0.9rem !important;
+        min-height: 34px !important;
         display: flex !important;
         align-items: center !important;
         box-shadow: none !important;
@@ -178,24 +142,24 @@ st.markdown("""
 
     .stRadio label div {
         color: #111827 !important;
-        font-size: 0.84rem !important;
+        font-size: 0.9rem !important;
     }
 
     .stCheckbox label {
-        font-size: 0.82rem !important;
+        font-size: 0.9rem !important;
     }
 
     div[data-testid="metric-container"] {
         background: var(--card-bg);
         border: 1px solid var(--border);
         border-radius: 15px;
-        padding: 0.85rem 0.95rem 0.75rem 0.95rem;
+        padding: 0.9rem 1rem 0.8rem 1rem;
         box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
     }
 
     div[data-testid="stMetricLabel"] {
         color: var(--muted) !important;
-        font-size: 0.82rem !important;
+        font-size: 0.84rem !important;
         font-weight: 600 !important;
     }
 
@@ -212,31 +176,33 @@ st.markdown("""
     }
 
     .stDownloadButton button {
-        background: var(--primary-soft) !important;
+        background: var(--button) !important;
         color: #ffffff !important;
         border: none !important;
         border-radius: 10px !important;
-        padding: 0.5rem 0.9rem !important;
+        padding: 0.55rem 0.95rem !important;
         font-weight: 700 !important;
-        font-size: 0.88rem !important;
+        font-size: 0.9rem !important;
         box-shadow: none !important;
     }
 
     .stDownloadButton button:hover {
-        background: var(--primary-soft-hover) !important;
+        background: var(--button-hover) !important;
         color: #ffffff !important;
     }
 
     .table-wrap {
+        width: 100%;
+        overflow-x: auto;
         background: #ffffff;
         border: 1px solid var(--border);
         border-radius: 16px;
-        overflow: hidden;
         box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
     }
 
     table.credit-table {
         width: 100%;
+        min-width: 760px;
         border-collapse: collapse;
         font-size: 0.9rem;
     }
@@ -274,42 +240,23 @@ st.markdown("""
         line-height: 1.25;
     }
 
-/* Fix definitivo: eliminar rectángulo oscuro en inputs */
-.stTextInput, .stTextInput * {
-    background: transparent !important;
-    box-shadow: none !important;
-}
+    @media (max-width: 768px) {
+        .block-container {
+            padding-left: 0.9rem !important;
+            padding-right: 0.9rem !important;
+        }
 
-.stTextInput div[data-baseweb="input"],
-.stTextInput div[data-baseweb="base-input"]{
-    background: transparent !important;
-    box-shadow: none !important;
-    border: none !important;
-}
+        h1 {
+            font-size: 1.75rem !important;
+        }
 
-.stTextInput input {
-    background: #ffffff !important;
-    color: #111827 !important;
-    border: 1px solid #d9e2ec !important;
-    box-shadow: none !important;
-}
-
-.stSidebar .stTextInput {
-    background: transparent !important;
-}
-
-/* Eliminar cualquier sombra inferior tipo rectángulo */
-.stTextInput > div {
-    box-shadow: none !important;
-    border: none !important;
-}
-
+        div[data-testid="stMetricValue"] {
+            font-size: 1.35rem !important;
+        }
+    }
 </style>
 """, unsafe_allow_html=True)
 
-# --------------------------------------------------
-# FUNCIONES
-# --------------------------------------------------
 def formato_pesos(valor):
     return f"${float(valor):,.0f}".replace(",", ".")
 
@@ -323,13 +270,10 @@ def parsear_numero(texto, decimales_permitidos=True):
 
     texto = texto.replace(" ", "")
 
-    # Caso 1: tiene coma y punto, asumimos punto miles y coma decimal
     if "," in texto and "." in texto:
         texto = texto.replace(".", "").replace(",", ".")
-    # Caso 2: solo coma, asumimos coma decimal
     elif "," in texto:
         texto = texto.replace(",", ".")
-    # Caso 3: solo punto, lo dejamos como decimal normal
     else:
         texto = texto
 
@@ -367,7 +311,8 @@ def construir_simulacion(
     gastos_notariales,
     incluir_gastos,
     cuotas_solo_interes,
-    amortizacion_cuota_4,
+    cuota_amortizacion_parcial,
+    amortizacion_parcial,
     valor_uf
 ):
     tasa = float(tasa_anual_pct) / 100.0
@@ -379,16 +324,20 @@ def construir_simulacion(
     saldo = monto_total
     filas = []
 
+    cuota_amortizacion_parcial = int(cuota_amortizacion_parcial) if cuota_amortizacion_parcial else 0
+
     for cuota_num in range(1, 6):
         saldo_inicial = float(saldo)
         interes = saldo_inicial * tasa
 
         if cuota_num <= int(cuotas_solo_interes):
             amortizacion = 0.0
-        elif cuota_num == 4:
-            amortizacion = min(float(amortizacion_cuota_4), saldo_inicial)
-        else:
+        elif cuota_num == cuota_amortizacion_parcial:
+            amortizacion = min(float(amortizacion_parcial), saldo_inicial)
+        elif cuota_num == 5:
             amortizacion = saldo_inicial
+        else:
+            amortizacion = 0.0
 
         cuota_total = interes + amortizacion
         saldo_final = saldo_inicial - amortizacion
@@ -470,7 +419,6 @@ def generar_excel(parametros, resumen, df):
 
         ws = writer.sheets[sheet_name]
 
-        # Estilos
         fill_header = PatternFill("solid", fgColor="EAF3FF")
         fill_subheader = PatternFill("solid", fgColor="EDF3F8")
         bold = Font(bold=True)
@@ -481,8 +429,7 @@ def generar_excel(parametros, resumen, df):
             bottom=Side(style="thin", color="D9E2EC")
         )
 
-        # Anchos
-        ws.column_dimensions["A"].width = 24
+        ws.column_dimensions["A"].width = 26
         ws.column_dimensions["B"].width = 22
         ws.column_dimensions["C"].width = 18
         ws.column_dimensions["D"].width = 18
@@ -495,7 +442,6 @@ def generar_excel(parametros, resumen, df):
         ws.column_dimensions["K"].width = 18
         ws.column_dimensions["L"].width = 18
 
-        # Encabezados secciones
         for cell in ws[1]:
             cell.fill = fill_header
             cell.font = bold
@@ -513,7 +459,6 @@ def generar_excel(parametros, resumen, df):
             cell.font = bold
             cell.border = border
 
-        # Bordes al contenido
         for row in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=1, max_col=min(ws.max_column, 12)):
             for cell in row:
                 if cell.value is not None:
@@ -524,114 +469,122 @@ def generar_excel(parametros, resumen, df):
     return salida.getvalue()
 
 # --------------------------------------------------
-# SIDEBAR
+# INTERFAZ
 # --------------------------------------------------
-st.sidebar.markdown('<div class="sidebar-title">Simulador</div>', unsafe_allow_html=True)
+st.title("Simulador de Crédito")
+st.markdown(f'<div class="version-label">{VERSION}</div>', unsafe_allow_html=True)
+st.write("Versión optimizada para visualización móvil y escritorio.")
 
-st.sidebar.markdown('<div class="sidebar-section">Tipo de crédito</div>', unsafe_allow_html=True)
-tipo_credito = st.sidebar.radio(
-    "Unidad del crédito",
+st.subheader("Parámetros")
+
+tipo_credito = st.radio(
+    "Tipo de crédito",
     ["Pesos", "UF"],
     horizontal=True
 )
 
 if tipo_credito == "UF":
-    valor_uf_txt = st.sidebar.text_input("Valor UF ($)", value="", placeholder="0")
+    valor_uf_txt = st.text_input("Valor UF ($)", value="", placeholder="0")
     valor_uf = parsear_numero(valor_uf_txt, decimales_permitidos=True)
     if valor_uf == "ERROR":
-        st.sidebar.error("Valor UF inválido.")
+        st.error("Valor UF inválido.")
         valor_uf = 0.0
-    st.sidebar.markdown(
-        '<div class="sidebar-note">Todos los valores del crédito deben ingresarse en UF.</div>',
-        unsafe_allow_html=True
-    )
+    st.markdown('<div class="section-note">Todos los valores del crédito deben ingresarse en UF.</div>', unsafe_allow_html=True)
 else:
     valor_uf = 0.0
-    st.sidebar.markdown(
-        '<div class="sidebar-note">Todos los valores del crédito deben ingresarse en pesos.</div>',
-        unsafe_allow_html=True
-    )
+    st.markdown('<div class="section-note">Todos los valores del crédito deben ingresarse en pesos.</div>', unsafe_allow_html=True)
 
-st.sidebar.markdown('<div class="sidebar-section">Parámetros</div>', unsafe_allow_html=True)
-
-monto_base_txt = st.sidebar.text_input(
+monto_base_txt = st.text_input(
     f"Monto base ({'UF' if tipo_credito == 'UF' else '$'})",
     value="",
     placeholder="0"
 )
 monto_base = parsear_numero(monto_base_txt, decimales_permitidos=(tipo_credito == "UF"))
 if monto_base == "ERROR":
-    st.sidebar.error("Monto base inválido.")
+    st.error("Monto base inválido.")
     monto_base = 0.0
 
-tasa_txt = st.sidebar.text_input(
+tasa_txt = st.text_input(
     "Tasa anual (%)",
     value="",
     placeholder="0"
 )
 tasa_anual_pct = parsear_numero(tasa_txt, decimales_permitidos=True)
 if tasa_anual_pct == "ERROR":
-    st.sidebar.error("Tasa inválida.")
+    st.error("Tasa inválida.")
     tasa_anual_pct = 0.0
 
-fecha_texto = st.sidebar.text_input(
+fecha_texto = st.text_input(
     "Fecha 1ª cuota",
     value="",
     placeholder="Día/Mes/Año"
 )
 fecha_primera_cuota = parsear_fecha_texto(fecha_texto)
 if fecha_primera_cuota == "ERROR":
-    st.sidebar.error("La fecha debe escribirse como Día/Mes/Año, por ejemplo 30/08/2027.")
+    st.error("La fecha debe escribirse como Día/Mes/Año, por ejemplo 30/08/2027.")
     fecha_primera_cuota = None
 
-st.sidebar.markdown('<div class="sidebar-section">Gastos</div>', unsafe_allow_html=True)
+st.subheader("Gastos")
 
-ite_txt = st.sidebar.text_input(
+ite_txt = st.text_input(
     f"ITE ({'UF' if tipo_credito == 'UF' else '$'})",
     value="",
     placeholder="0"
 )
 ite = parsear_numero(ite_txt, decimales_permitidos=(tipo_credito == "UF"))
 if ite == "ERROR":
-    st.sidebar.error("ITE inválido.")
+    st.error("ITE inválido.")
     ite = 0.0
 
-gastos_notariales_txt = st.sidebar.text_input(
+gastos_notariales_txt = st.text_input(
     f"Gastos notariales ({'UF' if tipo_credito == 'UF' else '$'})",
     value="",
     placeholder="0"
 )
 gastos_notariales = parsear_numero(gastos_notariales_txt, decimales_permitidos=(tipo_credito == "UF"))
 if gastos_notariales == "ERROR":
-    st.sidebar.error("Gastos notariales inválidos.")
+    st.error("Gastos notariales inválidos.")
     gastos_notariales = 0.0
 
-incluir_gastos = st.sidebar.checkbox("Incluir gastos en el crédito", value=False)
+incluir_gastos = st.checkbox("Incluir gastos en el crédito", value=False)
 
-st.sidebar.markdown('<div class="sidebar-section">Estructura</div>', unsafe_allow_html=True)
+st.subheader("Estructura")
 
-cuotas_solo_interes_txt = st.sidebar.text_input(
+cuotas_solo_interes_txt = st.text_input(
     "Cuotas solo interés",
     value="",
     placeholder="0"
 )
 cuotas_solo_interes = parsear_entero(cuotas_solo_interes_txt)
 if cuotas_solo_interes == "ERROR":
-    st.sidebar.error("Cuotas solo interés inválidas.")
+    st.error("Cuotas solo interés inválidas.")
     cuotas_solo_interes = 0
 if cuotas_solo_interes > 4:
-    st.sidebar.error("El máximo permitido es 4.")
+    st.error("El máximo permitido es 4.")
     cuotas_solo_interes = 4
 
-amortizacion_cuota_4_txt = st.sidebar.text_input(
-    f"Amortización cuota 4 ({'UF' if tipo_credito == 'UF' else '$'})",
+cuota_amortizacion_parcial_txt = st.text_input(
+    "Cuota de amortización parcial",
     value="",
     placeholder="0"
 )
-amortizacion_cuota_4 = parsear_numero(amortizacion_cuota_4_txt, decimales_permitidos=(tipo_credito == "UF"))
-if amortizacion_cuota_4 == "ERROR":
-    st.sidebar.error("Amortización cuota 4 inválida.")
-    amortizacion_cuota_4 = 0.0
+cuota_amortizacion_parcial = parsear_entero(cuota_amortizacion_parcial_txt)
+if cuota_amortizacion_parcial == "ERROR":
+    st.error("La cuota de amortización parcial es inválida.")
+    cuota_amortizacion_parcial = 0
+if cuota_amortizacion_parcial > 5:
+    st.error("La cuota de amortización parcial no puede ser mayor a 5.")
+    cuota_amortizacion_parcial = 5
+
+amortizacion_parcial_txt = st.text_input(
+    f"Monto amortización parcial ({'UF' if tipo_credito == 'UF' else '$'})",
+    value="",
+    placeholder="0"
+)
+amortizacion_parcial = parsear_numero(amortizacion_parcial_txt, decimales_permitidos=(tipo_credito == "UF"))
+if amortizacion_parcial == "ERROR":
+    st.error("Monto de amortización parcial inválido.")
+    amortizacion_parcial = 0.0
 
 # --------------------------------------------------
 # CÁLCULO
@@ -645,16 +598,14 @@ df, monto_total, total_pagado, interes_total, cuoton_capital = construir_simulac
     gastos_notariales=gastos_notariales,
     incluir_gastos=incluir_gastos,
     cuotas_solo_interes=cuotas_solo_interes,
-    amortizacion_cuota_4=amortizacion_cuota_4,
+    cuota_amortizacion_parcial=cuota_amortizacion_parcial,
+    amortizacion_parcial=amortizacion_parcial,
     valor_uf=valor_uf
 )
 
 # --------------------------------------------------
-# CONTENIDO PRINCIPAL
+# RESUMEN
 # --------------------------------------------------
-st.title("Simulador de Crédito")
-st.caption(VERSION)
-
 st.subheader("Resumen")
 col1, col2, col3 = st.columns(3)
 
@@ -702,7 +653,8 @@ parametros_excel = [
     ["Gastos notariales", formato_uf(gastos_notariales) if tipo_credito == "UF" else formato_pesos(gastos_notariales)],
     ["Incluir gastos en el crédito", "Sí" if incluir_gastos else "No"],
     ["Cuotas solo interés", str(cuotas_solo_interes)],
-    ["Amortización cuota 4", formato_uf(amortizacion_cuota_4) if tipo_credito == "UF" else formato_pesos(amortizacion_cuota_4)],
+    ["Cuota amortización parcial", str(cuota_amortizacion_parcial)],
+    ["Monto amortización parcial", formato_uf(amortizacion_parcial) if tipo_credito == "UF" else formato_pesos(amortizacion_parcial)],
 ]
 
 if tipo_credito == "UF":
